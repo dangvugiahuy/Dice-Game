@@ -30,8 +30,8 @@ struct InfoView: View {
                 Section(header: Text("How To Play")) {
                     Text("Just push the spin button to play.")
                     Text("HIGH  -> for choose SUM numbers (11 - 18)\nLOW   -> for choose SUM numbers (3 - 10)")
-                    Text("- The winning amount will be 10x of your betting amount.")
-                    Text("- If the dice roll to 3 identical faces and SUM is HIGH -> The winning amount will be 30x of your betting amount if you choose HIGH (this is also similar to LOW).")
+                    Text("- The amount of the bonus will be added to the account equal to the amount of coins you bet.")
+                    Text("- If the dice roll to 3 identical faces and SUM is HIGH -> The winning amount will be 10x of your betting amount if you choose HIGH (this is also similar to LOW).")
                     Text("- If you lose, you will be deducted x5 of the bet amount")
                     Text("You can reset the money and highscore by clicking on the button Reset.")
                 }
@@ -81,9 +81,3 @@ struct InfoView: View {
     
   }
 }
-
-//struct InfoView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        InfoView(user: )
-//    }
-//}

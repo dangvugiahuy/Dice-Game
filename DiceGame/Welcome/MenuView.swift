@@ -39,20 +39,21 @@ struct MenuView: View {
                             .resizable()
                             .modifier(ReelImageModifier())
                     })
-                    Button(action: {
-                        self.isGoToDeleteUserView = true
-                    }, label: {
-                        Image("deleteButton")
-                            .resizable()
-                            .modifier(ReelImageModifier())
-                    })
+                    .padding(.bottom, 5)
                     Button(action: {
                         self.isGoToUsersListView = true
                     }, label: {
                         Image("continueButton")
                             .resizable()
                             .modifier(ReelImageModifier())
-                            .padding(.bottom, 5)
+                    })
+                    .padding(.bottom, 5)
+                    Button(action: {
+                        self.isGoToDeleteUserView = true
+                    }, label: {
+                        Image("deleteButtonOfMenu")
+                            .resizable()
+                            .modifier(ReelImageModifier())
                     })
                     Spacer()
                 }

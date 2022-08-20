@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import NavigationStack
 
 struct GameView: View {
     @State private var userInfo: User
@@ -19,7 +20,8 @@ struct GameView: View {
     @State private var resultOfRoll = 0             //Biến chứa kết quả của mỗi lần roll
     @State private var animatingIcon = false
     @State private var isChooseBetbutton = false
-    @State private var checkBetIs0 = true
+    @State private var isGoBackToUsersListView: Bool = false
+    @State private var validateBet = true
     
     let haptics = UINotificationFeedbackGenerator()
     
@@ -97,17 +99,17 @@ struct GameView: View {
     
     // MARK: - PLAYER WIN LOGIC
     func playerWins() {
-        //Nếu đổ xúc xắc ra 3 mặt giống nhau và tổng là TÀI (11 - 18 điểm) -> nếu ván đó bạn chọn MAX (Đại diện cho TÀI) -> NỔ HŨ (số coin đặt ván đó x 30)
-        //Nếu đổ xúc xắc ra 3 mặt giống nhau và tổng là XỈU (3 - 10 điểm) -> nếu ván đó bạn chọn MIN (Đại diện cho XỈU) -> NỔ HŨ (số coin đặt ván đó x 30)
-        //Nếu 2 trường hợp trên không thoả thì sẽ thực hiện cộng tiền như bình thường -> (số coin đặt ván đó x 10)
+        //Nếu đổ xúc xắc ra 3 mặt giống nhau và tổng là TÀI (11 - 18 điểm) -> nếu ván đó bạn chọn MAX (Đại diện cho TÀI) -> NỔ HŨ (số coin đặt ván đó x 10)
+        //Nếu đổ xúc xắc ra 3 mặt giống nhau và tổng là XỈU (3 - 10 điểm) -> nếu ván đó bạn chọn MIN (Đại diện cho XỈU) -> NỔ HŨ (số coin đặt ván đó x 10)
+        //Nếu 2 trường hợp trên không thoả thì sẽ thực hiện cộng tiền như bình thường -> (số coin đặt ván đó được cộng vào tiền)
         if isChooseMax == true && AreThreeFacesSame() == true && SumIsMax() == true{
-            savedUsers[userInfo.id-1].money += betAmount * 30
+            savedUsers[userInfo.id-1].money += betAmount * 10
             playSound(sound: "highscore", type: "mp3")
         } else if isChooseMin == true && AreThreeFacesSame() == true && SumIsMin() == true{
-            savedUsers[userInfo.id-1].money += betAmount * 30
+            savedUsers[userInfo.id-1].money += betAmount * 10
             playSound(sound: "highscore", type: "mp3")
         } else {
-            savedUsers[userInfo.id-1].money += betAmount * 10
+            savedUsers[userInfo.id-1].money += betAmount
             playSound(sound: "winning", type: "mp3")
         }
     }
@@ -120,17 +122,15 @@ struct GameView: View {
     
     // MARK: - PLAYER LOSE LOGIC
     func playLoses() {
-        //Nếu đổ xúc xắc ra 3 mặt giống nhau và tổng là TÀI (11 - 18 điểm) -> nếu ván đó bạn chọn MIN (Đại diện cho XỈU) -> Bạn bị trừ số tiền cược x 5 (đồng thời bị trừ thêm 30% số tiền còn lại)
-        //Nếu đổ xúc xắc ra 3 mặt giống nhau và tổng là Xỉu (3 - 10 điểm) -> nếu ván đó bạn chọn MAX (Đại diện cho TÀI) -> Bạn bị trừ số tiền cược x 5 (đồng thời bị trừ thêm 30% số tiền còn lại)
-        //Nếu 2 trường hợp trên không thoả thì sẽ thực hiện trừ tiền như bình thường -> (số coin đặt ván đó x 5)
+        //Nếu đổ xúc xắc ra 3 mặt giống nhau và tổng là TÀI (11 - 18 điểm) -> nếu ván đó bạn chọn MIN (Đại diện cho XỈU) -> Bạn bị trừ số tiền cược x 5
+        //Nếu đổ xúc xắc ra 3 mặt giống nhau và tổng là Xỉu (3 - 10 điểm) -> nếu ván đó bạn chọn MAX (Đại diện cho TÀI) -> Bạn bị trừ số tiền cược x 5
+        //Nếu 2 trường hợp trên không thoả thì sẽ thực hiện trừ tiền như bình thường -> ( bị trừ đi số coin đặt ván đó)
         if isChooseMax == true && AreThreeFacesSame() == true && SumIsMin() == true {
             savedUsers[userInfo.id-1].money -= betAmount * 5
-            savedUsers[userInfo.id-1].money -= Int((0.3 * Double(userInfo.money)))
         } else if isChooseMin == true && AreThreeFacesSame() == true && SumIsMax() == true{
             savedUsers[userInfo.id-1].money -= betAmount * 5
-            savedUsers[userInfo.id-1].money -= Int((0.3 * Double(userInfo.money)))
         } else {
-            savedUsers[userInfo.id-1].money -= betAmount * 5
+            savedUsers[userInfo.id-1].money -= betAmount
         }
         
         if savedUsers[userInfo.id-1].money < 0 {
@@ -164,7 +164,7 @@ struct GameView: View {
     // MARK: - RESET GAME LOGIC
     func resetGame(){
         savedUsers[userInfo.id-1].highscore = 0
-        savedUsers[userInfo.id-1].money = 100
+        savedUsers[userInfo.id-1].money = 1000
         chooseMin()
         playSound(sound: "ring-up", type: "mp3")
     }
@@ -172,6 +172,7 @@ struct GameView: View {
     // MARK: - BODY
     var body: some View {
         ZStack {
+            PopView(isActive: $isGoBackToUsersListView, label: {Text("")})
             // MARK: - BACKGROUND
             LinearGradient(gradient: Gradient(colors: [Color("ColorBananaRMIT"), Color("ColorBrightPurpleRMIT")]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
@@ -284,7 +285,7 @@ struct GameView: View {
                                 .resizable()
                                 .modifier(ReelImageModifier())
                         }
-                        .disabled(checkBetIs0)
+                        .disabled(validateBet)
                         
                         Button {
                             if self.isChooseBetbutton == false {
@@ -293,9 +294,13 @@ struct GameView: View {
                                 self.isChooseBetbutton = false
                             }
                             
-                            if betAmount != 0 {
-                                if checkBetIs0 == true {
-                                    checkBetIs0 = false
+                            if betAmount != 0 && betAmount <= savedUsers[userInfo.id-1].money {
+                                if validateBet == true {
+                                    validateBet = false
+                                }
+                            } else {
+                                if validateBet == false {
+                                    validateBet = true
                                 }
                             }
                         } label: {
@@ -361,13 +366,11 @@ struct GameView: View {
 
             }
             .overlay(
-                
-                // MARK: - RESET GAME BUTTON
-                
+                // MARK: - BACK TO USERS LIST BUTTON
                 Button(action: {
-                    self.resetGame()
+                    self.isGoBackToUsersListView = true
                 }) {
-                  Image(systemName: "arrow.2.circlepath.circle")
+                  Image(systemName: "chevron.left.circle")
                     .foregroundColor(.white)
                 }
                 .modifier(ButtonModifier()),
@@ -382,6 +385,19 @@ struct GameView: View {
                   Image(systemName: "info.circle")
                     .foregroundColor(.white)
                 }
+                .modifier(ButtonModifier()),
+                alignment: .topTrailing
+            )
+            .overlay(
+                
+                // MARK: - RESET GAME BUTTON
+                Button(action: {
+                    self.resetGame()
+                }) {
+                  Image(systemName: "arrow.2.circlepath.circle")
+                    .foregroundColor(.white)
+                }
+                .padding(.top, 45)
                 .modifier(ButtonModifier()),
                 alignment: .topTrailing
             )
@@ -418,7 +434,7 @@ struct GameView: View {
                                 .multilineTextAlignment(.center)
                             Button {
                                 self.showGameOverModal = false
-                                self.savedUsers[userInfo.id-1].money = 100
+                                self.savedUsers[userInfo.id-1].money = 1000
                             } label: {
                                 Text("New Game".uppercased())
                             }
@@ -468,7 +484,7 @@ struct GameView: View {
             }
         }
         .sheet(isPresented: $showingInfoView) {
-            InfoView(userInfo: userInfo)
+            InfoView(userInfo: savedUsers[userInfo.id-1])
         }
     }
 }

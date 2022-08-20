@@ -84,7 +84,7 @@ struct CreateNewUser: View {
                     .keyboardType(.default)
                 Button(action: {
                     if validateName() == true {
-                        savedUsers.append(User(id: savedUsers.count+1, name: name, money: 100, highscore: 0, imageName: imageName))
+                        savedUsers.append(User(id: savedUsers.count+1, name: name, money: 1000, highscore: 0, imageName: imageName))
                         isCreateSucces = true
                     } else {
                         isCreateLost = true

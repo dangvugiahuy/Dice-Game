@@ -65,8 +65,8 @@ struct usersList: View {
             VStack {
                 Text("CHOOSE YOUR PROFILE")
                     .foregroundColor(.white)
-                    .font(.system(size: 30, weight: .heavy, design: .rounded))
-                    .padding(.top, 45)
+                    .font(.system(size: 27, weight: .heavy, design: .rounded))
+                    .padding(.top, 75)
                     
                 if UserSortedByScore().count == 0 {
                     Spacer()
@@ -87,6 +87,7 @@ struct usersList: View {
                             ForEach(Top3UserHighScore(), id: \.self) { user in
                                 PushView(destination: GameView(user: user), label: {
                                     userRow(user: user)
+                                        .frame(minWidth: 320, idealWidth: 320, maxWidth: 320, minHeight: 100, idealHeight: 120, maxHeight: 150, alignment: .center)
                                 })
                             }
                         }
@@ -107,6 +108,7 @@ struct usersList: View {
                             ForEach(displayallUser(), id: \.self) { user in
                                 PushView(destination: GameView(user: user), label: {
                                     userRow(user: user)
+                                        .frame(minWidth: 320, idealWidth: 320, maxWidth: 320, minHeight: 100, idealHeight: 120, maxHeight: 150, alignment: .center)
                                 })
                             }
                         }
@@ -119,6 +121,7 @@ struct usersList: View {
                                 ForEach(user4thToN(), id: \.self) { user in
                                     PushView(destination: GameView(user: user), label: {
                                         userRow(user: user)
+                                            .frame(minWidth: 320, idealWidth: 320, maxWidth: 320, minHeight: 100, idealHeight: 120, maxHeight: 150, alignment: .center)
                                     })
                                 }
                             }
