@@ -67,6 +67,7 @@ struct usersList: View {
                     .foregroundColor(.white)
                     .font(.system(size: 27, weight: .heavy, design: .rounded))
                     .padding(.top, 75)
+                    .padding(.bottom, 25)
                     
                 if UserSortedByScore().count == 0 {
                     Spacer()
@@ -87,7 +88,7 @@ struct usersList: View {
                             ForEach(Top3UserHighScore(), id: \.self) { user in
                                 PushView(destination: GameView(user: user), label: {
                                     userRow(user: user)
-                                        .frame(minWidth: 320, idealWidth: 320, maxWidth: 320, minHeight: 100, idealHeight: 120, maxHeight: 150, alignment: .center)
+                                        .frame(minWidth: 370, idealWidth: 370, maxWidth: 370, minHeight: 110, idealHeight: 110, maxHeight: 110, alignment: .center)
                                 })
                             }
                         }
@@ -99,16 +100,15 @@ struct usersList: View {
                         }
                         Spacer()
                     } else if UserSortedByScore().count > 3 {
-                        Spacer()
                         VStack {
                             Text("🏆Top 3 players🏆")
                                 .foregroundColor(.white)
                                 .font(.system(size: 20, weight: .heavy, design: .rounded))
-                                .padding(.bottom, 20)
+                                .padding(.bottom, 10)
                             ForEach(displayallUser(), id: \.self) { user in
                                 PushView(destination: GameView(user: user), label: {
                                     userRow(user: user)
-                                        .frame(minWidth: 320, idealWidth: 320, maxWidth: 320, minHeight: 100, idealHeight: 120, maxHeight: 150, alignment: .center)
+                                        .frame(minWidth: 370, idealWidth: 370, maxWidth: 370, minHeight: 110, idealHeight: 110, maxHeight: 110, alignment: .center)
                                 })
                             }
                         }
@@ -116,17 +116,16 @@ struct usersList: View {
                             Text("4th - \(UserSortedByScore().count)")
                                 .foregroundColor(.white)
                                 .font(.system(size: 20, weight: .heavy, design: .rounded))
-                                .padding(.bottom, 20)
+                                .padding(.bottom, 10)
                             ScrollView {
                                 ForEach(user4thToN(), id: \.self) { user in
                                     PushView(destination: GameView(user: user), label: {
                                         userRow(user: user)
-                                            .frame(minWidth: 320, idealWidth: 320, maxWidth: 320, minHeight: 100, idealHeight: 120, maxHeight: 150, alignment: .center)
+                                            .frame(minWidth: 370, idealWidth: 370, maxWidth: 370, minHeight: 110, idealHeight: 110, maxHeight: 110, alignment: .center)
                                     })
                                 }
                             }
                         }
-                        Spacer()
                     }
                 }
             }

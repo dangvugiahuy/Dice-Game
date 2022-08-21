@@ -22,6 +22,12 @@ struct DeleteUserView: View {
         }
         return false
     }
+    
+    func indexOfUser() -> Int {
+        let indexUser = savedUsers.firstIndex(where: {$0.id == Int(id)})
+        return indexUser!
+    }
+    
     var body: some View {
         ZStack {
             PopView(isActive: $isGoBackToRoot, label: {Text("")})
@@ -50,7 +56,7 @@ struct DeleteUserView: View {
                     .keyboardType(.default)
                 Button(action: {
                     if validateID(id: id) == true {
-                        savedUsers.remove(at: Int(id)!-1)
+                        savedUsers.remove(at: indexOfUser())
                         isDeleteSucces = true
                     } else {
                         isDeleteFail = true

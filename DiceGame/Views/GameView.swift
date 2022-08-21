@@ -16,7 +16,7 @@ struct GameView: View {
     // MARK: - PROPERTIES
     let dicesFace = ["dice_1", "dice_2", "dice_3", "dice_4", "dice_5", "dice_6"]
     @AppStorage("saved_users") var savedUsers : [User] = []
-    @State private var betAmount = 0                //Số tiền đặt cược
+    @State private var betAmount = 10                //Số tiền đặt cược
     @State private var resultOfRoll = 0             //Biến chứa kết quả của mỗi lần roll
     @State private var animatingIcon = false
     @State private var isChooseBetbutton = false
@@ -32,6 +32,12 @@ struct GameView: View {
     
     @State private var showingInfoView = false
     @State private var showGameOverModal = false
+    
+    // MARK: - GET INDEX OF USER
+    func indexOfUser() -> Int {
+        let indexUser = savedUsers.firstIndex(where: {$0.id == userInfo.id})
+        return indexUser!
+    }
     
     // MARK: - FUNCTIONS (GAME LOGICS)
     
@@ -79,7 +85,7 @@ struct GameView: View {
              playerWins()
             
             // NEW HIGHSCORE LOGIC
-            if savedUsers[userInfo.id-1].money > savedUsers[userInfo.id-1].highscore{
+            if savedUsers[indexOfUser()].money > savedUsers[indexOfUser()].highscore{
                 newHighScore()
             }
         } else if SumIsMax() == true && isChooseMax == true {
@@ -87,7 +93,7 @@ struct GameView: View {
             playerWins()
             
             // NEW HIGHSCORE LOGIC
-            if savedUsers[userInfo.id-1].money > savedUsers[userInfo.id-1].highscore{
+            if savedUsers[indexOfUser()].money > savedUsers[indexOfUser()].highscore{
                 newHighScore()
             }
         } else {
@@ -103,20 +109,20 @@ struct GameView: View {
         //Nếu đổ xúc xắc ra 3 mặt giống nhau và tổng là XỈU (3 - 10 điểm) -> nếu ván đó bạn chọn MIN (Đại diện cho XỈU) -> NỔ HŨ (số coin đặt ván đó x 10)
         //Nếu 2 trường hợp trên không thoả thì sẽ thực hiện cộng tiền như bình thường -> (số coin đặt ván đó được cộng vào tiền)
         if isChooseMax == true && AreThreeFacesSame() == true && SumIsMax() == true{
-            savedUsers[userInfo.id-1].money += betAmount * 10
+            savedUsers[indexOfUser()].money += betAmount * 10
             playSound(sound: "highscore", type: "mp3")
         } else if isChooseMin == true && AreThreeFacesSame() == true && SumIsMin() == true{
-            savedUsers[userInfo.id-1].money += betAmount * 10
+            savedUsers[indexOfUser()].money += betAmount * 10
             playSound(sound: "highscore", type: "mp3")
         } else {
-            savedUsers[userInfo.id-1].money += betAmount
+            savedUsers[indexOfUser()].money += betAmount
             playSound(sound: "winning", type: "mp3")
         }
     }
     
     // MARK: - HIGHSCORE LOGIC
     func newHighScore(){
-        savedUsers[userInfo.id-1].highscore = savedUsers[userInfo.id-1].money
+        savedUsers[indexOfUser()].highscore = savedUsers[indexOfUser()].money
         playSound(sound: "highscore", type: "mp3")
     }
     
@@ -126,15 +132,15 @@ struct GameView: View {
         //Nếu đổ xúc xắc ra 3 mặt giống nhau và tổng là Xỉu (3 - 10 điểm) -> nếu ván đó bạn chọn MAX (Đại diện cho TÀI) -> Bạn bị trừ số tiền cược x 5
         //Nếu 2 trường hợp trên không thoả thì sẽ thực hiện trừ tiền như bình thường -> ( bị trừ đi số coin đặt ván đó)
         if isChooseMax == true && AreThreeFacesSame() == true && SumIsMin() == true {
-            savedUsers[userInfo.id-1].money -= betAmount * 5
+            savedUsers[indexOfUser()].money -= betAmount * 5
         } else if isChooseMin == true && AreThreeFacesSame() == true && SumIsMax() == true{
-            savedUsers[userInfo.id-1].money -= betAmount * 5
+            savedUsers[indexOfUser()].money -= betAmount * 5
         } else {
-            savedUsers[userInfo.id-1].money -= betAmount
+            savedUsers[indexOfUser()].money -= betAmount
         }
         
-        if savedUsers[userInfo.id-1].money < 0 {
-            savedUsers[userInfo.id-1].money = 0
+        if savedUsers[indexOfUser()].money < 0 {
+            savedUsers[indexOfUser()].money = 0
         } else {return}
     }
     
@@ -154,7 +160,7 @@ struct GameView: View {
     
     // MARK: - GAME OVER LOGIC
     func isGameOver() {
-        if savedUsers[userInfo.id-1].money <= 0 {
+        if savedUsers[indexOfUser()].money <= 0 {
             // SHOW MODAL MESSAGE OF GAME OVER
             showGameOverModal = true
             playSound(sound: "gameover", type: "mp3")
@@ -163,8 +169,8 @@ struct GameView: View {
     
     // MARK: - RESET GAME LOGIC
     func resetGame(){
-        savedUsers[userInfo.id-1].highscore = 0
-        savedUsers[userInfo.id-1].money = 1000
+        savedUsers[indexOfUser()].highscore = 0
+        savedUsers[indexOfUser()].money = 1000
         chooseMin()
         playSound(sound: "ring-up", type: "mp3")
     }
@@ -193,7 +199,7 @@ struct GameView: View {
                         Text("Your\nMoney".uppercased())
                             .modifier(scoreLabelStyle())
                             .multilineTextAlignment(.trailing)
-                        Text("\(savedUsers[userInfo.id-1].money)")
+                        Text("\(savedUsers[indexOfUser()].money)")
                             .modifier(scoreNumberStyle())
                             
                     }
@@ -202,7 +208,7 @@ struct GameView: View {
                     
                     Spacer()
                     HStack{
-                        Text("\(savedUsers[userInfo.id-1].highscore)")
+                        Text("\(savedUsers[indexOfUser()].highscore)")
                             .modifier(scoreNumberStyle())
                             .multilineTextAlignment(.leading)
                         Text("High\nScore".uppercased())
@@ -280,13 +286,15 @@ struct GameView: View {
                             
                             // GAME OVER
                             self.isGameOver()
+                            validateBet = true
                         } label: {
                             Image("spinButton")
                                 .resizable()
-                                .modifier(ReelImageModifier())
+                                .modifier(ButtonModifier())
+                                .frame(width: 150, height: 120, alignment: .center)
                         }
                         .disabled(validateBet)
-                        
+                        Spacer()
                         Button {
                             if self.isChooseBetbutton == false {
                                 self.isChooseBetbutton = true
@@ -294,7 +302,7 @@ struct GameView: View {
                                 self.isChooseBetbutton = false
                             }
                             
-                            if betAmount != 0 && betAmount <= savedUsers[userInfo.id-1].money {
+                            if betAmount != 0 && betAmount <= savedUsers[indexOfUser()].money && isChooseBetbutton == false {
                                 if validateBet == true {
                                     validateBet = false
                                 }
@@ -306,8 +314,8 @@ struct GameView: View {
                         } label: {
                             Image("betButton")
                                 .resizable()
-                                .modifier(ReelImageModifier())
-                                .modifier(ShadowModifier())
+                                .modifier(ButtonModifier())
+                                .frame(width: 150, height: 120, alignment: .center)
                         }
                     }
                     
@@ -434,7 +442,7 @@ struct GameView: View {
                                 .multilineTextAlignment(.center)
                             Button {
                                 self.showGameOverModal = false
-                                self.savedUsers[userInfo.id-1].money = 1000
+                                self.savedUsers[indexOfUser()].money = 1000
                             } label: {
                                 Text("New Game".uppercased())
                             }
@@ -484,7 +492,7 @@ struct GameView: View {
             }
         }
         .sheet(isPresented: $showingInfoView) {
-            InfoView(userInfo: savedUsers[userInfo.id-1])
+            InfoView(userInfo: savedUsers[indexOfUser()])
         }
     }
 }
