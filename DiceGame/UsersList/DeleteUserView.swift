@@ -17,7 +17,7 @@ struct DeleteUserView: View {
     @State private var id: String = ""
     
     func validateID(id: String) -> Bool {
-        if Int(id) != nil && Int(id)! <= savedUsers.count {
+        if Int(id) != nil {
             return true
         }
         return false

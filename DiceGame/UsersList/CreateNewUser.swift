@@ -29,6 +29,16 @@ struct CreateNewUser: View {
         return false
     }
     
+    func randomID() -> Int {
+        let randomUserId = Int.random(in: 1...9999)
+        for i in 0..<savedUsers.count {
+            if savedUsers[i].id == randomUserId {
+                return randomID()
+            }
+        }
+        return randomUserId
+    }
+    
     var body: some View {
         ZStack {
             PopView(isActive: $isGoBackToRoot, label: {Text("")})
@@ -84,7 +94,7 @@ struct CreateNewUser: View {
                     .keyboardType(.default)
                 Button(action: {
                     if validateName() == true {
-                        savedUsers.append(User(id: savedUsers.count+1, name: name, money: 1000, highscore: 0, imageName: imageName))
+                        savedUsers.append(User(id: randomID(), name: name, money: 1000, highscore: 0, imageName: imageName))
                         isCreateSucces = true
                     } else {
                         isCreateLost = true

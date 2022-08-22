@@ -22,7 +22,7 @@ struct InfoView: View {
                     Image("\(userInfo.imageName)")
                         .resizable()
                         .modifier(IconImageModifier())
-                    Text("ID: \(userInfo.id)")
+                    Text("ID: " + String(userInfo.id))
                     Text("Name: \(userInfo.name)")
                     Text("Money: \(userInfo.money)")
                     Text("High Score: \(userInfo.highscore)")
